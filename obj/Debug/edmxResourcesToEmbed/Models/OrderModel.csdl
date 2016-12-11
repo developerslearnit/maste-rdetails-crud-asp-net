@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ordersModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="OrderDetail">
+    <Key>
+      <PropertyRef Name="DetailId" />
+    </Key>
+    <Property Name="DetailId" Type="Guid" Nullable="false" />
+    <Property Name="MasterId" Type="Guid" Nullable="false" />
+    <Property Name="ProductName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Quantity" Type="Int32" Nullable="false" />
+    <Property Name="Amount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+    <NavigationProperty Name="OrderMaster" Relationship="ordersModel.FK_OrderDetails_OrderMaster" FromRole="OrderDetail" ToRole="OrderMaster" />
+  </EntityType>
+  <EntityContainer Name="ordersEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="OrderDetails" EntityType="Self.OrderDetail" />
+    <EntitySet Name="OrderMasters" EntityType="ordersModel.OrderMaster" />
+    <AssociationSet Name="FK_OrderDetails_OrderMaster" Association="ordersModel.FK_OrderDetails_OrderMaster">
+      <End Role="OrderMaster" EntitySet="OrderMasters" />
+      <End Role="OrderDetail" EntitySet="OrderDetails" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="OrderMaster">
+    <Key>
+      <PropertyRef Name="MasterId" />
+    </Key>
+    <Property Name="MasterId" Type="Guid" Nullable="false" />
+    <Property Name="CustomerName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Name="Address" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="OrderDetails" Relationship="ordersModel.FK_OrderDetails_OrderMaster" FromRole="OrderMaster" ToRole="OrderDetail" />
+  </EntityType>
+  <Association Name="FK_OrderDetails_OrderMaster">
+    <End Type="ordersModel.OrderMaster" Role="OrderMaster" Multiplicity="1" />
+    <End Type="ordersModel.OrderDetail" Role="OrderDetail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OrderMaster">
+        <PropertyRef Name="MasterId" />
+      </Principal>
+      <Dependent Role="OrderDetail">
+        <PropertyRef Name="MasterId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
